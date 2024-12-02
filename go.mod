@@ -2,7 +2,10 @@ module github.com/phomola/grounder
 
 go 1.20.0
 
-require github.com/stretchr/testify v1.10.0
+require (
+	github.com/fealsamh/datastructures v0.1.11
+	github.com/stretchr/testify v1.10.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

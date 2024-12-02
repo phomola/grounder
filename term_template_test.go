@@ -20,7 +20,7 @@ func TestTermMatch(t *testing.T) {
 		tm := &TermTemplate{Functor: "a", Args: []Arg{String{"b"}, Var{"c"}, String{"d"}}}
 		term := &Term{Functor: "a", Args: []string{"b", "c", "dd"}}
 		m := make(map[string]string)
-		s := tm.Match(term, m)
+		_, s := tm.Match(term, m)
 		req.False(s)
 	})
 
@@ -39,8 +39,9 @@ func TestTermMatch(t *testing.T) {
 		tm := &TermTemplate{Functor: "a", Args: []Arg{String{"b"}, Var{"c"}, String{"d"}}}
 		term := &Term{Functor: "a", Args: []string{"b", "c", "d"}}
 		m := make(map[string]string)
-		s := tm.Match(term, m)
+		vars, s := tm.Match(term, m)
 		req.True(s)
+		req.Equal([]string{"c"}, vars)
 		req.Equal(map[string]string{"c": "c"}, m)
 		term2, err := tm.Ground(map[string]string{"c": "cc"})
 		req.NoError(err)

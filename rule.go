@@ -1,8 +1,14 @@
 package grounder
 
+// WeightedTermTemplate ...
+type WeightedTermTemplate struct {
+	Weight float64
+	Term   *TermTemplate
+}
+
 // Rule ...
 type Rule struct {
 	ID  string
-	In  []*TermTemplate
+	In  []*WeightedTermTemplate
 	Out []*TermTemplate
 }

@@ -46,11 +46,19 @@ func (tm *TermTemplate) String() string {
 	return sb.String()
 }
 
-// Match ...
-func (tm *TermTemplate) Match(t *Term, m map[string]string) bool {
-	if tm.Functor != t.Functor || len(tm.Args) != len(t.Args) {
-		return false
+func (tm *TermTemplate) signature() signature {
+	return signature{
+		functor: tm.Functor,
+		arity:   len(tm.Args),
 	}
+}
+
+// Match ...
+func (tm *TermTemplate) Match(t *Term, m map[string]string) ([]string, bool) {
+	if tm.Functor != t.Functor || len(tm.Args) != len(t.Args) {
+		return nil, false
+	}
+	var newVars []string
 	for i, ta := range tm.Args {
 		a := t.Args[i]
 		switch ta := ta.(type) {
@@ -58,18 +66,25 @@ func (tm *TermTemplate) Match(t *Term, m map[string]string) bool {
 			n := ta.Name
 			if v, ok := m[n]; ok {
 				if v != a {
-					return false
+					for _, n := range newVars {
+						delete(m, n)
+					}
+					return nil, false
 				}
 			} else {
 				m[n] = a
+				newVars = append(newVars, n)
 			}
 		case String:
 			if a != ta.Value {
-				return false
+				for _, n := range newVars {
+					delete(m, n)
+				}
+				return nil, false
 			}
 		}
 	}
-	return true
+	return newVars, true
 }
 
 // Ground ...

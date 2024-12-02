@@ -25,3 +25,33 @@ func (t *Term) String() string {
 	}
 	return sb.String()
 }
+
+// Compare ...
+func (t *Term) Compare(t2 *Term) int {
+	if t.Functor < t2.Functor {
+		return -1
+	}
+	if t.Functor > t2.Functor {
+		return 1
+	}
+	if len(t.Args) < len(t2.Args) {
+		return -1
+	}
+	if len(t.Args) > len(t2.Args) {
+		return 1
+	}
+	for i, a1 := range t.Args {
+		a2 := t2.Args[i]
+		if c := strings.Compare(a1, a2); c != 0 {
+			return c
+		}
+	}
+	return 0
+}
+
+func (t *Term) signature() signature {
+	return signature{
+		functor: t.Functor,
+		arity:   len(t.Args),
+	}
+}
