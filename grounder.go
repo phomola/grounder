@@ -58,20 +58,35 @@ func NewGrounder() *Grounder {
 }
 
 // ApplyRules ...
-func (g *Grounder) ApplyRules() error {
+func (g *Grounder) ApplyRules() (int, error) {
 	var level int
 	for {
 		terms, ok := g.termsByLevel[level]
 		if !ok {
-			return nil
+			return level, nil
 		}
 		for _, term := range terms {
 			if rules, ok := g.rulesByOutTerm[term.Term.signature()]; ok {
 				for r := range rules {
-					if err := g.applyRule(r.rule, r.pos, term, 0, make(map[string]string), nil, func(m map[string]string, out []*WeightedTerm) {
-						fmt.Println("#", r.rule.ID, out)
+					if err := g.applyRule(r.rule, r.pos, term, 0, make(map[string]string), nil, func(m map[string]string, out []*WeightedTerm) error {
+						var weight float64
+						for _, t := range out {
+							weight += t.Weight
+						}
+						in := make([]*WeightedTerm, len(r.rule.In))
+						for i, t := range r.rule.In {
+							t2, err := t.Term.Ground(m)
+							if err != nil {
+								return err
+							}
+							in[i] = &WeightedTerm{Term: t2, Weight: weight * t.Weight}
+						}
+						for _, t := range in {
+							g.AddTerm(t, level+1)
+						}
+						return nil
 					}); err != nil {
-						return fmt.Errorf("failed to apply rule: %s %w", r.rule.ID, err)
+						return level, fmt.Errorf("failed to apply rule: %s %w", r.rule.ID, err)
 					}
 				}
 			}
@@ -80,10 +95,9 @@ func (g *Grounder) ApplyRules() error {
 	}
 }
 
-func (g *Grounder) applyRule(r *Rule, pos int, posTerm *WeightedTerm, i int, m map[string]string, out []*WeightedTerm, cb func(map[string]string, []*WeightedTerm)) error {
+func (g *Grounder) applyRule(r *Rule, pos int, posTerm *WeightedTerm, i int, m map[string]string, out []*WeightedTerm, cb func(map[string]string, []*WeightedTerm) error) error {
 	if i == len(r.Out) {
-		cb(m, out)
-		return nil
+		return cb(m, out)
 	}
 	tm := r.Out[i]
 	if i == pos {
@@ -147,7 +161,7 @@ func (g *Grounder) AddRule(r *Rule) {
 
 // AddTerm ...
 func (g *Grounder) AddTerm(t *WeightedTerm, level int) bool {
-	if !g.terms.Insert(t) {
+	if g.terms.Insert(t) {
 		return false
 	}
 

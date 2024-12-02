@@ -16,9 +16,9 @@ func TestAddTerm(t *testing.T) {
 	g := NewGrounder()
 
 	s := g.AddTerm(term, 1)
-	req.False(s)
-	s = g.AddTerm(term, 1)
 	req.True(s)
+	s = g.AddTerm(term, 1)
+	req.False(s)
 
 	req.Equal(1, g.terms.Size())
 	req.Equal(1, len(g.termsByLevel))
@@ -34,6 +34,18 @@ func TestApplyRules(t *testing.T) {
 		In: []*WeightedTermTemplate{
 			{
 				Weight: 0.5,
+				Term:   &TermTemplate{Functor: "q", Args: []Arg{Var{Name: "x"}}},
+			},
+		},
+		Out: []*TermTemplate{
+			{Functor: "r", Args: []Arg{Var{Name: "x"}}},
+		},
+	})
+	g.AddRule(&Rule{
+		ID: "R2",
+		In: []*WeightedTermTemplate{
+			{
+				Weight: 0.25,
 				Term:   &TermTemplate{Functor: "p", Args: []Arg{Var{Name: "x"}}},
 			},
 		},
@@ -41,5 +53,18 @@ func TestApplyRules(t *testing.T) {
 			{Functor: "q", Args: []Arg{Var{Name: "x"}}},
 		},
 	})
-	req.Equal(1, len(g.rules))
+	req.Equal(2, len(g.rules))
+
+	s := g.AddTerm(&WeightedTerm{Weight: 1.5, Term: &Term{Functor: "r", Args: []string{"a"}}}, 0)
+	req.True(s)
+
+	level, err := g.ApplyRules()
+	req.NoError(err)
+	req.Equal(3, level)
+
+	terms := g.String()
+	req.Equal(`0 r(a) 1.500000
+1 q(a) 0.750000
+2 p(a) 0.187500
+`, terms)
 }
