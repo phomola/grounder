@@ -57,13 +57,21 @@ func NewGrounder() *Grounder {
 	}
 }
 
+// RuleInstance ...
+type RuleInstance struct {
+	ID  string
+	In  []*WeightedTerm
+	Out []*WeightedTerm
+}
+
 // ApplyRules ...
-func (g *Grounder) ApplyRules() (int, error) {
+func (g *Grounder) ApplyRules() (int, []*RuleInstance, error) {
 	var level int
+	var ruleInstances []*RuleInstance
 	for {
 		terms, ok := g.termsByLevel[level]
 		if !ok {
-			return level, nil
+			return level, ruleInstances, nil
 		}
 		for _, term := range terms {
 			if rules, ok := g.rulesByOutTerm[term.Term.signature()]; ok {
@@ -84,9 +92,14 @@ func (g *Grounder) ApplyRules() (int, error) {
 						for _, t := range in {
 							g.AddTerm(t, level+1)
 						}
+						ruleInstances = append(ruleInstances, &RuleInstance{
+							ID:  r.rule.ID,
+							In:  in,
+							Out: out,
+						})
 						return nil
 					}); err != nil {
-						return level, fmt.Errorf("failed to apply rule: %s %w", r.rule.ID, err)
+						return level, nil, fmt.Errorf("failed to apply rule: %s %w", r.rule.ID, err)
 					}
 				}
 			}

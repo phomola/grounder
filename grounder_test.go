@@ -1,8 +1,11 @@
 package grounder
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
+	"github.com/mailstepcz/slice"
 	"github.com/stretchr/testify/require"
 )
 
@@ -58,9 +61,17 @@ func TestApplyRules(t *testing.T) {
 	s := g.AddTerm(&WeightedTerm{Weight: 1.5, Term: &Term{Functor: "r", Args: []string{"a"}}}, 0)
 	req.True(s)
 
-	level, err := g.ApplyRules()
+	level, ruleInstances, err := g.ApplyRules()
 	req.NoError(err)
 	req.Equal(3, level)
+
+	req.Equal(2, len(ruleInstances))
+	for _, ri := range ruleInstances {
+		fmt.Println("#", ri.ID,
+			strings.Join(slice.Fmap(func(t *WeightedTerm) string { return fmt.Sprintf("%s/%f", t.Term.String(), t.Weight) }, ri.In), " & "),
+			"->",
+			strings.Join(slice.Fmap(func(t *WeightedTerm) string { return fmt.Sprintf("%s/%f", t.Term.String(), t.Weight) }, ri.Out), " & "))
+	}
 
 	terms := g.String()
 	req.Equal(`0 r(a) 1.500000
