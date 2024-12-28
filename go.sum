@@ -2,8 +2,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fealsamh/datastructures v0.1.11 h1:pJMHCuZhohdNbfTtwE0aSGfNXy/IHb64c0sYDGSqkOM=
 github.com/fealsamh/datastructures v0.1.11/go.mod h1:HjT3MXqYTwjvru/HBnhv3x3tZRQscHWCousuZ6PPprc=
-github.com/mailstepcz/maybe v0.1.0 h1:Bl4PwrGdLJtM88NuoL0xZ1uBBO+FBAuP4wISrF1VaOs=
-github.com/mailstepcz/maybe v0.1.0/go.mod h1:jYa5xYUC9pKgpt0XkMUZ5A0tXcfKLrxZEAU7nGUrSz8=
+github.com/mailstepcz/maybe v0.1.1 h1:8gRJBHVin54pxKb3phHRwSTkL8maz4uuJwvyLj774Uo=
+github.com/mailstepcz/maybe v0.1.1/go.mod h1:jYa5xYUC9pKgpt0XkMUZ5A0tXcfKLrxZEAU7nGUrSz8=
 github.com/mailstepcz/pointer v0.1.0 h1:X2IOwkG34Opr0KM4naDbhubWqVVjlFq8Ti1kclSwye8=
 github.com/mailstepcz/pointer v0.1.0/go.mod h1:zTgDutGlayTlC2vcUOV1lZXr+EjR+95iAgVSFUjXkBA=
 github.com/mailstepcz/slice v0.1.0 h1:hL2GTbi1hJB9ujWlDxQEGfpiyJvqYnin+6HCydFSwFo=
